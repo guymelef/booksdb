@@ -1,0 +1,55 @@
+html, body {
+    height: 100vh;
+}
+
+body {
+	background-image: url("../img/books.jpg");
+	background-repeat: repeat;
+	background-size: cover;
+}
+
+.navbar-brand {
+	color: #D7CFCC;
+	font-size: 1.5rem;
+}
+
+.navbar-brand:hover {
+	color: white;
+}
+
+h1 {
+	font-family: 'Pacifico', cursive;
+	font-size: 5rem;
+	color: #343a40;
+	text-shadow: 0.5px 0.5px #f2efef;
+}
+
+#login-btn {
+	background-color: #ffd11a;
+	color: white;
+}
+
+#login-btn:hover {
+	background-color: orange;
+}
+
+#signup-btn {
+	background-color: #0099cc;
+	color: white;
+}
+
+#signup-btn:hover {
+	background-color: dodgerblue;
+}
+
+p, .lead, body {
+	font-family: 'Roboto Slab', serif;
+	color: white;
+	text-shadow: 1px 1px black;
+}
+
+hr {
+	border-color: #ffd11a;
+	border-width: 3px;
+}
+
