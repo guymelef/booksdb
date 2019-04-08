@@ -23,7 +23,7 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg bg-transparent">
-      <a class="navbar-brand" href="#">📚<strong> BOOKSDB</strong></a>
+      <a class="navbar-brand" href="{{ url_for('index') }}">📚<strong> BOOKSDB</strong></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -39,7 +39,7 @@
     <div class="container h-100 d-flex flex-column">
       <div class="jumbotron bg-transparent my-auto">
         <h1>Hello, bibliophiles! 😎</h1>
-        <p class="lead">Search information about your favorite reads. Browse books by author, title, etc. <br> Write review for books that interest you and read about other people's thoughts as well.</p>
+        <p class="lead">Search information about your favorite reads. Browse books by author, title, or ISBN. <br> Write review for books that interest you and read about other people's thoughts as well.</p>
         <hr class="my-4">
         <p>It's quite easy to get started, just click the button below to register for free.</p>
         <a href="{{ url_for('register') }}">

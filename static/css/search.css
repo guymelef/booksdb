@@ -1,0 +1,39 @@
+html, body {
+    height: 100vh;
+}
+
+body {
+	background-image: url("../img/books.jpg");
+	background-repeat: repeat;
+	background-size: cover;
+}
+
+.navbar-brand {
+	color: #D7CFCC;
+	font-size: 1.5rem;
+}
+
+.navbar-brand:hover {
+	color: white;
+}
+
+h1 {
+	font-family: 'Pacifico', cursive;
+	font-size: 5rem;
+	color: #343a40;
+	text-shadow: 0.5px 0.5px #f2efef;
+}
+
+body {
+	font-family: 'Roboto Slab', serif;
+	color: white;
+}
+
+#logout-btn {
+	background-color: #D23A2F;
+	color: white;
+}
+
+#logout-btn:hover {
+	background-color: #ff2121;
+}
