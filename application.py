@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
 from sqlalchemy import create_engine
@@ -30,7 +30,34 @@ def index():
 
 @app.route("/register",  methods=["GET", "POST"])
 def register():
-	return render_template("register.html")
+	"""Register user."""
+
+	# when user signs up using the form
+	if request.method == "POST":
+
+		# ensure passwords match
+		if request.form.get("password") != request.form.get("password_check"):
+			flash("Passwords do not match. 😕")
+			return redirect(url_for("register"))
+
+		# hash user password
+		hash = pwd_context.hash(request.form.get("password"))
+
+		# add user to db & check if unique
+		try:
+			result = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": request.form.get("username"), "hash": hash})
+		except:
+			flash("Username is taken. 😕")
+			return redirect(url_for("register"))
+		db.commit()
+
+		# when register succeeds
+		flash("Successfully registered! You can now sign in.")
+		return redirect(url_for("login"))
+
+	# when user reaches register via GET
+	else:
+		return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

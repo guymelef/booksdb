@@ -3,8 +3,8 @@ html, body {
 }
 
 body {
-	background-image: url("../img/books.jpg");
-	background-repeat: repeat;
+	background-image: url("../img/morebooks.jpg");
+	background-repeat: no-repeat;
 	background-size: cover;
 }
 
@@ -20,8 +20,8 @@ body {
 h1 {
 	font-family: 'Pacifico', cursive;
 	font-size: 5rem;
-	color: #343a40;
-	text-shadow: 0.5px 0.5px #f2efef;
+	color: #f2efef;
+	text-shadow: 0.5px 0.5px #14090f;
 }
 
 body {
@@ -36,4 +36,8 @@ body {
 
 #logout-btn:hover {
 	background-color: #ff2121;
+}
+
+label {
+	text-shadow: 0.5px 0.5px #14090f;
 }

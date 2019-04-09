@@ -33,6 +33,14 @@
       <div class="row h-100 justify-content-center align-items-center">
         <form method="post" class="ml-2 mr-2 mt-0">
           <h1 class="text-center mb-4">Welcome back! 🤓</h1>
+          {% if get_flashed_messages() %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+              <div class="text-center"> {{ get_flashed_messages()[0] }} </div>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endif %}
           <div class="form-group row">
             <label for="username">Username:</label>
             <input type="name" class="form-control" name="user" placeholder="username" required>

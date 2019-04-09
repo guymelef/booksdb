@@ -4,7 +4,7 @@ html, body {
 
 body {
 	background-image: url("../img/books.jpg");
-	background-repeat: repeat;
+	background-repeat: inherit;
 	background-size: cover;
 }
 
