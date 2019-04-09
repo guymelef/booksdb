@@ -6,6 +6,8 @@ from passlib.apps import custom_app_context as pwd_context
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+from functions import *
+
 app = Flask(__name__)
 
 # Check for environment variable
@@ -66,7 +68,7 @@ def login():
 	if request.method == "POST":
 
 		# query database
-		user = db.execute("SELECT * FROM users where username = :username", {"username" : request.form.get("username")}).fetchone()
+		user = db.execute("SELECT * FROM users WHERE username = :username", {"username" : request.form.get("username")}).fetchone()
 
 		# verify user-password from db
 		if user is None or not pwd_context.verify(request.form.get("password"), user["hash"]):
@@ -75,7 +77,7 @@ def login():
 
 		# remember which user is logged in
 		session["user_id"] = user["id"]
-		session["username"] = user["username"]
+		session["user"] = user["username"]
 
 		# redirect to search page
 		return redirect(url_for("search"))
@@ -84,8 +86,23 @@ def login():
 	else:	
 		return render_template("login.html")
 
-@app.route("/search")
+@app.route("/search", methods=["GET", "POST"])
+@login_required
 def search():
+	"""Search library for books."""
+	
+	# if user submits form
+	if request.method == "POST":
+
+		category = request.form.get("category")
+		search = request.form.get("search")
+		rough_search = f'%{search}%'
+
+		#query database
+		result = db.execute("SELECT * FROM library WHERE "f'{category}'" ILIKE :rough_search", {"rough_search" : rough_search}).fetchall()
+
+		print(result)
+	
 	return render_template("search.html")
 
 @app.route("/book")
@@ -100,4 +117,4 @@ def logout():
     session.clear()
 
     # redirect user to login form
-    return redirect(url_for("login"))
+    return redirect(url_for("index"))
