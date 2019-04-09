@@ -61,7 +61,28 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-	return render_template("login.html")
+	"""Sign in user."""
+
+	if request.method == "POST":
+
+		# query database
+		user = db.execute("SELECT * FROM users where username = :username", {"username" : request.form.get("username")}).fetchone()
+
+		# verify user-password from db
+		if user is None or not pwd_context.verify(request.form.get("password"), user["hash"]):
+			flash("Invalid username and/or password. ☹️")
+			return redirect(url_for("login"))
+
+		# remember which user is logged in
+		session["user_id"] = user["id"]
+		session["username"] = user["username"]
+
+		# redirect to search page
+		return redirect(url_for("search"))
+
+	# when user reaches login via GET
+	else:	
+		return render_template("login.html")
 
 @app.route("/search")
 def search():
