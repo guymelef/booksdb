@@ -18,7 +18,9 @@
   <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
 
-
+  <!-- Favicon -->
+  <link rel="icon" href="../static/img/favicon.ico">
+  
   <title>BooksDB | Search</title>
   </head>
   <body>
@@ -78,9 +80,11 @@
             {% for book in books %}
               <div class="list-group">
                   <a href="{{ url_for('book', book_id=book.id) }}" class="list-group-item list-group-item-action mb-1">
+                    <img class="float-left mr-4" src="http://covers.openlibrary.org/b/isbn/{{ book.isbn }}-S.jpg"/>
                     <h3 class="text-primary">{{ book["title"] }} ({{ book["year"] }})</h2>
-                    <p class="text-info"><strong>{{ book["author"] }}</strong> <br>
-                    <span class="text-secondary"><strong>ISBN</strong>: {{ book["isbn"] }}</span></p>
+                    <p class="text-info"><strong>{{ book["author"] }}</strong>
+                    <span class="text-secondary"><strong><span class="text-warning"><strong>|<strong></span> ISBN</strong>: {{ book["isbn"] }}</span></p>
+
                   </a>
               </div>
             {% endfor %}

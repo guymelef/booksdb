@@ -118,7 +118,7 @@ def book(book_id):
 
 	# query database
 	book = db.execute("SELECT * FROM library WHERE id = :id", {"id" : book_id}).fetchone()
-	if len(book) == 0:
+	if book is None or len(book) == 0:
 		return redirect(url_for("search"))
 
 	return render_template("book.html")
