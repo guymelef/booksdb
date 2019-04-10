@@ -71,7 +71,7 @@ def login():
 		user = db.execute("SELECT * FROM users WHERE username = :username", {"username" : request.form.get("username")}).fetchone()
 
 		# verify user-password from db
-		if user is None or not pwd_context.verify(request.form.get("password"), user["hash"]):
+		if len(user) == 0 or not pwd_context.verify(request.form.get("password"), user["hash"]):
 			flash("Invalid username and/or password. ☹️")
 			return redirect(url_for("login"))
 
@@ -99,14 +99,28 @@ def search():
 		rough_search = f'%{search}%'
 
 		#query database
-		result = db.execute("SELECT * FROM library WHERE "f'{category}'" ILIKE :rough_search", {"rough_search" : rough_search}).fetchall()
+		books = db.execute("SELECT * FROM library WHERE "f'{category}'" ILIKE :rough_search ORDER BY author ASC", {"rough_search" : rough_search}).fetchall()
 
-		print(result)
-	
-	return render_template("search.html")
+		# if search returns empty
+		if len(books) == 0:
+			flash("My magnifying glass broke but still couldn't find anything. 🤔")
+			return redirect(url_for("search"))
 
-@app.route("/book")
-def book():
+		# return books to search page
+		return render_template("search.html", books = books, number = len(books))
+
+	# if user reaches page via GET	
+	else:
+		return render_template("search.html")
+
+@app.route("/book/<int:book_id>")
+def book(book_id):
+
+	# query database
+	book = db.execute("SELECT * FROM library WHERE id = :id", {"id" : book_id}).fetchone()
+	if len(book) == 0:
+		return redirect(url_for("search"))
+
 	return render_template("book.html")
 
 @app.route("/logout")

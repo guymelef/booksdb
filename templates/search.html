@@ -35,12 +35,12 @@
         </li>
       </ul>
     </nav>
-
+ 
     <div class="container h-100">
       <div class="row h-100 justify-content-center align-items-center">
         <form method="post" class="ml-2 mr-2 mt-0">
           <h1 class="text-center mb-4">Let's find your book!</h1>
-          <div class="form-group">
+          <div class="form-group mt-4">
             <div class="form-check-inline">
               <input class="form-check-input" type="radio" name="category" id="inlineRadio1" value="author" required>
               <label class="form-check-label font-weight-bold" for="inlineRadio1">Author</label>
@@ -62,7 +62,31 @@
               </div>
             </div>
           </div>
-        </form>  
+          
+          {% if get_flashed_messages() %}
+            <div class="alert alert-dark alert-dismissible fade show text-center" role="alert">
+                 {{ get_flashed_messages()[0] }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+          {% endif %}
+
+          {% if books|length %}
+          <h3 class="mb-0">Search found {{ number }} result(s):</h2>
+          <p>Click on a book title to be taken to its page.</p>
+            {% for book in books %}
+              <div class="list-group">
+                  <a href="{{ url_for('book', book_id=book.id) }}" class="list-group-item list-group-item-action mb-1">
+                    <h3 class="text-primary">{{ book["title"] }} ({{ book["year"] }})</h2>
+                    <p class="text-info"><strong>{{ book["author"] }}</strong> <br>
+                    <span class="text-secondary"><strong>ISBN</strong>: {{ book["isbn"] }}</span></p>
+                  </a>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+        </form> 
       </div>
     </div>
     
