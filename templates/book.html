@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" type="text/css" href="../static/css/search.css">
+  <link rel="stylesheet" type="text/css" href="../static/css/book.css">
   
   <!-- FontAwesome -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
@@ -37,9 +37,83 @@
         </li>
       </ul>
     </nav>
- 
     
     
+    <div class="container mt-4">
+      <div class="row">
+        <div class="container col-4">
+          <div class="card" style="width: 20rem;">
+            <a href="#"><img src="{{ thumbnail }}" class="card-img-top bg-white" alt="..."></a>
+            <div class="card-body">
+              <h5 class="card-title">{{book.title}} ({{book.year}})</h5>
+              <p class="text-info"><strong>{{ book["author"] }}</strong><span class="text-secondary"><br> <strong>ISBN</strong>: {{ book["isbn"] }}</span></p>
+              <hr>
+              <h6><strong>Book Description:</strong></h6>
+              <p class="text-justify">{{ plot }}</p>
+              <div class="text-center">
+                <a href="{{url_for('search')}}" class="btn btn-info">Find another book?</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container col-8 mt-4">    
+          <h3><strong><i class="fas fa-book-reader"></i> WRITE A REVIEW</strong></h3>
+          <div class="row mt-4">
+            <div class="col-sm-4">
+              <p class="text-center rounded bg-light">
+                <strong>Goodreads Average Rating</strong>:
+                <br>
+                <strong class="text-info">{{rating}}/5</strong>
+                <br>
+                (based on <strong>{{ count }}</strong> reviews)
+              </p>
+              <p>Have you read this book? How was it? Fill up the form to leave a review and rating. Share your thoughts with others.</p>
+              <p class="small"><strong>Note</strong>: <em>You can only write a review once. Make it count!</em> 😃</p>
+            </div>
+            <div class="col-sm-8">
+              <form method="post">
+                <div class="form-group mt-4">
+                  {% if get_flashed_messages() %}
+                    <div class="alert alert-primary alert-dismissible fade show text-center" role="alert">
+                         {{ get_flashed_messages()[0] }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                  {% endif %}
+                  <div class="form-check-inline mr-2">
+                    <input class="form-check-input mr-1" type="radio" name="star" id="inlineRadio1" value="1" required>
+                    <label class="form-check-label" for="inlineRadio1">⭐</label>
+                  </div>
+                  <div class="form-check-inline mr-2">
+                    <input class="form-check-input mr-1" type="radio" name="star" id="inlineRadio2" value="2" required>
+                    <label class="form-check-label" for="inlineRadio2">⭐⭐</label>
+                  </div>
+                  <div class="form-check-inline mr-2">
+                    <input class="form-check-input mr-1" type="radio" name="star" id="inlineRadio3" value="3" required>
+                    <label class="form-check-label" for="inlineRadio3">⭐⭐⭐</label>
+                  </div>
+                  <div class="form-check-inline mr-2">
+                    <input class="form-check-input mr-1" type="radio" name="star" id="inlineRadio3" value="4" required>
+                    <label class="form-check-label" for="inlineRadio4">⭐⭐⭐⭐</label>
+                  </div><div class="form-check-inline mr-2">
+                    <input class="form-check-input mr-1" type="radio" name="star" id="inlineRadio3" value="5" required>
+                    <label class="form-check-label" for="inlineRadio5">⭐⭐⭐⭐⭐</label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <textarea class="form-control" id="comment" name="comment" placeholder="Write your review here." rows="8" required></textarea>
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">Submit Review</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <hr>
+        </div>
+      </div>
+    </div>
 
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->

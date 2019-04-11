@@ -63,8 +63,7 @@
                 <button class="btn btn-light" type="submit" id="button-addon2"><i class="fa fa-search"></i></button>
               </div>
             </div>
-          </div>
-          
+          </div>          
           {% if get_flashed_messages() %}
             <div class="alert alert-dark alert-dismissible fade show text-center" role="alert">
                  {{ get_flashed_messages()[0] }}
@@ -73,7 +72,6 @@
                 </button>
             </div>
           {% endif %}
-
           {% if books|length %}
           <h3 class="mb-0">Search found {{ number }} result(s):</h2>
           <p>Click on a book title to be taken to its page.</p>
@@ -84,12 +82,10 @@
                     <h3 class="text-primary">{{ book["title"] }} ({{ book["year"] }})</h2>
                     <p class="text-info"><strong>{{ book["author"] }}</strong>
                     <span class="text-secondary"><strong><span class="text-warning"><strong>|<strong></span> ISBN</strong>: {{ book["isbn"] }}</span></p>
-
                   </a>
               </div>
             {% endfor %}
           {% endif %}
-
         </form> 
       </div>
     </div>

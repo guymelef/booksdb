@@ -1,4 +1,5 @@
 import os
+import requests
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
@@ -113,15 +114,58 @@ def search():
 	else:
 		return render_template("search.html")
 
-@app.route("/book/<int:book_id>")
+@app.route("/book/<int:book_id>", methods=["GET", "POST"])
+@login_required
 def book(book_id):
+	"""Show individual book page."""
+	
+	# if user submits a review via the form
+	if request.method == "POST":
 
-	# query database
-	book = db.execute("SELECT * FROM library WHERE id = :id", {"id" : book_id}).fetchone()
-	if book is None or len(book) == 0:
-		return redirect(url_for("search"))
+		# get review details
+		rating = request.form.get("star")
+		comment = request.form.get("comment")
+		user_id = session["user_id"]
+		book_id = book_id
 
-	return render_template("book.html")
+		# verify if user has made a review for this book already
+		check = db.execute("SELECT * from reviews WHERE user_id = :user_id", {"user_id" : session["user_id"]}).fetchone()
+		print(len(check))
+		if len(check) > 0:
+			flash("Sorry. You have reviewed this book already. 💔")
+			return redirect(url_for("book",book_id=book_id))
+
+		# add review to database
+		db.execute("INSERT INTO reviews (rating, review_text, user_id, book_id) VALUES (:rating, :review_text, :user_id, :book_id)", {"rating" : rating, "review_text" : comment, "user_id" : user_id, "book_id" : book_id})
+		db.commit()
+
+		flash("Awesome! Your review has been added. ❤️")
+		return redirect(url_for("book",book_id=book_id))
+
+	# user reaches route via GET
+	else:
+
+		# find book in library db
+		book = db.execute("SELECT * FROM library WHERE id = :id", {"id" : book_id}).fetchone()
+		if book is None or len(book) == 0:
+			return redirect(url_for("search"))
+
+		res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "***REMOVED***", "isbns": book.isbn})
+		
+		# Goodreads API data
+		goodreads = res.json()['books'][0]
+		avg_rating = goodreads['average_rating']
+		rev_count = goodreads['work_ratings_count']
+
+
+		# get plot & thumbnail from Google Books API
+		googleAPI = requests.get("https://www.googleapis.com/books/v1/volumes?q="f'{book.title}'"").json()["items"][0]["volumeInfo"]
+		plot = googleAPI["description"]
+		thumbnail = googleAPI["imageLinks"]["thumbnail"]
+
+		return render_template("book.html", book=book, rating=avg_rating, count=rev_count, plot=plot, thumbnail=thumbnail)
+
+
 
 @app.route("/logout")
 def logout():
