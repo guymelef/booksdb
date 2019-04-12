@@ -1,7 +1,7 @@
 import os
 import requests
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
 from sqlalchemy import create_engine
@@ -27,7 +27,7 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
-	"""Render the landing page."""
+	"""Render landing page."""
 
 	return render_template("index.html")
 
@@ -120,7 +120,7 @@ def search():
 @app.route("/book/<int:book_id>", methods=["GET", "POST"])
 @login_required
 def book(book_id):
-	"""Show individual book page."""
+	"""Show individual book pages."""
 	
 	# if user submits a review via the form
 	if request.method == "POST":
@@ -186,13 +186,15 @@ def logout():
 @app.route("/api/<isbn>", methods=["GET"])
 @login_required
 def api(isbn):
+	"""Provide access to API."""
+
 
 	# query database for book using isbn
 	book = db.execute("SELECT * FROM library WHERE isbn = :isbn", {"isbn" : isbn}).fetchone()
 
 	# return 404 eror if book can't be found in db
 	if book is None:
-		return render_template("404.html")
+		return jsonify({"error": "Invalid ISBN"}), 404
 
 	# query Goodreads
 	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "***REMOVED***", "isbns": book.isbn})	
@@ -200,17 +202,11 @@ def api(isbn):
 	avg_rating = goodreads['average_rating']
 	rev_count = goodreads['work_ratings_count']
 
-	#create a list as response
-	response = [
-		{
+	return jsonify({
 		    "title": book.title,
 		    "author": book.author,
 		    "year": book.year,
 		    "isbn": book.isbn,
 		    "review_count": rev_count,
 		    "average_score": avg_rating
-		}
-	]
-
-	print(response)
-	return render_template("api.html", response=response)
+		})
