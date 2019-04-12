@@ -48,14 +48,14 @@ def register():
 
 		# add user to db & check if unique
 		try:
-			result = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": request.form.get("username"), "hash": hash})
+			result = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": request.form.get("username").lower(), "hash": hash})
 		except:
 			flash("Username is taken. 😕")
 			return redirect(url_for("register"))
 		db.commit()
 
 		# when register succeeds
-		flash("Successfully registered! You can now sign in.")
+		flash("Successfully registered! 👍 You can now sign in.")
 		return redirect(url_for("login"))
 
 	# when user reaches register via GET
@@ -66,13 +66,16 @@ def register():
 def login():
 	"""Sign in user."""
 
+	if len(session) > 1:
+		session.clear()
+
 	if request.method == "POST":
 
 		# query database
-		user = db.execute("SELECT * FROM users WHERE username = :username", {"username" : request.form.get("username")}).fetchone()
+		user = db.execute("SELECT * FROM users WHERE username = :username", {"username" : request.form.get("username").lower()}).fetchone()
 
 		# verify user-password from db
-		if len(user) == 0 or not pwd_context.verify(request.form.get("password"), user["hash"]):
+		if user is None or not pwd_context.verify(request.form.get("password"), user["hash"]):
 			flash("Invalid username and/or password. ☹️")
 			return redirect(url_for("login"))
 
@@ -91,7 +94,7 @@ def login():
 @login_required
 def search():
 	"""Search library for books."""
-	
+
 	# if user submits form
 	if request.method == "POST":
 
@@ -129,9 +132,8 @@ def book(book_id):
 		book_id = book_id
 
 		# verify if user has made a review for this book already
-		check = db.execute("SELECT * from reviews WHERE user_id = :user_id", {"user_id" : session["user_id"]}).fetchone()
-		print(len(check))
-		if len(check) > 0:
+		check = db.execute("SELECT * from reviews WHERE user_id = :user_id AND book_id = :book_id", {"user_id" : session["user_id"], "book_id" : book_id}).fetchone()
+		if check:
 			flash("Sorry. You have reviewed this book already. 💔")
 			return redirect(url_for("book",book_id=book_id))
 
@@ -163,8 +165,11 @@ def book(book_id):
 		plot = googleAPI["description"]
 		thumbnail = googleAPI["imageLinks"]["thumbnail"]
 
-		return render_template("book.html", book=book, rating=avg_rating, count=rev_count, plot=plot, thumbnail=thumbnail)
 
+		# get user reviews from db
+		reviews = db.execute("SELECT username, date_posted, rating, review_text FROM reviews JOIN users ON users.id = reviews.user_id WHERE book_id = :book_id ORDER BY date_posted DESC", {"book_id" : book_id}).fetchall()
+
+		return render_template("book.html", book=book, rating=avg_rating, count=rev_count, plot=plot, thumbnail=thumbnail, reviews=reviews)
 
 
 @app.route("/logout")
@@ -176,3 +181,36 @@ def logout():
 
     # redirect user to login form
     return redirect(url_for("index"))
+
+
+@app.route("/api/<isbn>", methods=["GET"])
+@login_required
+def api(isbn):
+
+	# query database for book using isbn
+	book = db.execute("SELECT * FROM library WHERE isbn = :isbn", {"isbn" : isbn}).fetchone()
+
+	# return 404 eror if book can't be found in db
+	if book is None:
+		return render_template("404.html")
+
+	# query Goodreads
+	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "***REMOVED***", "isbns": book.isbn})	
+	goodreads = res.json()['books'][0]
+	avg_rating = goodreads['average_rating']
+	rev_count = goodreads['work_ratings_count']
+
+	#create a list as response
+	response = [
+		{
+		    "title": book.title,
+		    "author": book.author,
+		    "year": book.year,
+		    "isbn": book.isbn,
+		    "review_count": rev_count,
+		    "average_score": avg_rating
+		}
+	]
+
+	print(response)
+	return render_template("api.html", response=response)

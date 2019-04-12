@@ -1,101 +1,67 @@
-<!doctype html>
-<html lang="en">
-  <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends "layout.html" %}
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" type="text/css" href="../static/css/search.css">
-  
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+{% block css_link %}
+  ../static/css/inner.css
+{% endblock %}
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+{% block title %}
+  Search
+{% endblock %}
 
-  <!-- Favicon -->
-  <link rel="icon" href="../static/img/favicon.ico">
-  
-  <title>BooksDB | Search</title>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg bg-transparent">
-      <a class="navbar-brand" href="{{ url_for('index') }}">📚<strong> BOOKSDB</strong></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('logout') }}">
-            <button type="button" class="btn" role="button" id="logout-btn">Log Out <i class="fas fa-sign-out-alt"></i></button>
-          </a>
-        </li>
-      </ul>
-    </nav>
- 
-    <div class="container h-100">
-      <div class="row h-100 justify-content-center align-items-center">
-        <form method="post" class="ml-2 mr-2 mt-0">
-          <h1 class="text-center mb-4">Let's find your book!</h1>
-          <div class="form-group mt-4">
-            <div class="form-check-inline">
-              <input class="form-check-input" type="radio" name="category" id="inlineRadio1" value="author" required>
-              <label class="form-check-label font-weight-bold" for="inlineRadio1">Author</label>
-            </div>
-            <div class="form-check-inline">
-              <input class="form-check-input" type="radio" name="category" id="inlineRadio2" value="title" required>
-              <label class="form-check-label font-weight-bold" for="inlineRadio2">Title</label>
-            </div>
-            <div class="form-check-inline">
-              <input class="form-check-input" type="radio" name="category" id="inlineRadio3" value="isbn" required>
-              <label class="form-check-label font-weight-bold" for="inlineRadio3">ISBN</label>
+{% block home_redirect %}
+  {{ url_for("search") }}
+{% endblock %}
+
+{% block main %}
+  <div class="container h-100 text-light">
+    <div class="row h-100 justify-content-center align-items-center">
+      <form method="post" class="ml-2 mr-2 mt-0">
+        <h1 class="text-center mb-4">Let's find your book!</h1>
+        <div class="form-group mt-4">
+          <div class="form-check-inline">
+            <input class="form-check-input" type="radio" name="category" id="inlineRadio1" value="author" required>
+            <label class="form-check-label font-weight-bold" for="inlineRadio1">Author</label>
+          </div>
+          <div class="form-check-inline">
+            <input class="form-check-input" type="radio" name="category" id="inlineRadio2" value="title" required>
+            <label class="form-check-label font-weight-bold" for="inlineRadio2">Title</label>
+          </div>
+          <div class="form-check-inline">
+            <input class="form-check-input" type="radio" name="category" id="inlineRadio3" value="isbn" required>
+            <label class="form-check-label font-weight-bold" for="inlineRadio3">ISBN</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search books by category" aria-label="Search books by category" aria-describedby="button-addon2" name="search" required>
+            <div class="input-group-append">
+              <button class="btn btn-light" type="submit" id="button-addon2"><i class="fa fa-search"></i></button>
             </div>
           </div>
-          <div class="form-group">
-            <div class="input-group mb-3">
-              <input type="text" class="form-control" placeholder="Search books by category" aria-label="Search books by category" aria-describedby="button-addon2" name="search" required>
-              <div class="input-group-append">
-                <button class="btn btn-light" type="submit" id="button-addon2"><i class="fa fa-search"></i></button>
-              </div>
+        </div>          
+        {% if get_flashed_messages() %}
+          <div class="alert alert-dark alert-dismissible fade show text-center" role="alert">
+               {{ get_flashed_messages()[0] }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+        {% endif %}
+        {% if books|length %}
+        <h3 class="mb-0">Search found {{ number }} result(s):</h2>
+        <p>Click on a book title to be taken to its page.</p>
+          {% for book in books %}
+            <div class="list-group">
+                <a href="{{ url_for('book', book_id=book.id) }}" class="list-group-item list-group-item-action mb-1">
+                  <img class="float-left mr-4" src="http://covers.openlibrary.org/b/isbn/{{ book.isbn }}-S.jpg"/>
+                  <h3 class="text-primary">{{ book["title"] }} ({{ book["year"] }})</h2>
+                  <p class="text-info"><strong>{{ book["author"] }}</strong>
+                  <span class="text-secondary"><strong><span class="text-warning"><strong>|<strong></span> ISBN</strong>: {{ book["isbn"] }}</span></p>
+                </a>
             </div>
-          </div>          
-          {% if get_flashed_messages() %}
-            <div class="alert alert-dark alert-dismissible fade show text-center" role="alert">
-                 {{ get_flashed_messages()[0] }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-          {% endif %}
-          {% if books|length %}
-          <h3 class="mb-0">Search found {{ number }} result(s):</h2>
-          <p>Click on a book title to be taken to its page.</p>
-            {% for book in books %}
-              <div class="list-group">
-                  <a href="{{ url_for('book', book_id=book.id) }}" class="list-group-item list-group-item-action mb-1">
-                    <img class="float-left mr-4" src="http://covers.openlibrary.org/b/isbn/{{ book.isbn }}-S.jpg"/>
-                    <h3 class="text-primary">{{ book["title"] }} ({{ book["year"] }})</h2>
-                    <p class="text-info"><strong>{{ book["author"] }}</strong>
-                    <span class="text-secondary"><strong><span class="text-warning"><strong>|<strong></span> ISBN</strong>: {{ book["isbn"] }}</span></p>
-                  </a>
-              </div>
-            {% endfor %}
-          {% endif %}
-        </form> 
-      </div>
+          {% endfor %}
+        {% endif %}
+      </form> 
     </div>
-    
-    
-
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  </body>
-</html>
+  </div>
+{% endblock %}

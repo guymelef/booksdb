@@ -1,11 +1,26 @@
 html, body {
     height: 100vh;
-}
-
-body {
-	background-image: url("../img/books.jpg");
+    background-image: url("../img/books.jpg");
 	background-repeat: inherit;
 	background-size: cover;
+	font-family: 'Roboto Slab', serif;
+	color: white;
+}
+
+h1 {
+	font-family: 'Pacifico', cursive;
+	font-size: 5rem;
+	color: #343a40;
+	text-shadow: 0.5px 0.5px #f2efef;
+}
+
+p, .lead {
+	text-shadow: 1px 1px black;
+}
+
+hr {
+	border-color: #ffd11a;
+	border-width: 3px;
 }
 
 .navbar-brand {
@@ -15,13 +30,6 @@ body {
 
 .navbar-brand:hover {
 	color: white;
-}
-
-h1 {
-	font-family: 'Pacifico', cursive;
-	font-size: 5rem;
-	color: #343a40;
-	text-shadow: 0.5px 0.5px #f2efef;
 }
 
 #login-btn {
@@ -42,13 +50,11 @@ h1 {
 	background-color: dodgerblue;
 }
 
-p, .lead, body {
-	font-family: 'Roboto Slab', serif;
+#logout-btn {
+	background-color: #D23A2F;
 	color: white;
-	text-shadow: 1px 1px black;
 }
 
-hr {
-	border-color: #ffd11a;
-	border-width: 3px;
+#logout-btn:hover {
+	background-color: #ff2121;
 }
