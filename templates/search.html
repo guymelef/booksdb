@@ -15,7 +15,7 @@
 {% block main %}
   <div class="container h-100 text-light">
     <div class="row h-100 justify-content-center align-items-center">
-      <form method="post" class="ml-2 mr-2 mt-0">
+      <form method="GET" class="ml-2 mr-2 mt-0">
         <h1 class="text-center mb-4">Let's find your book!</h1>
         <div class="form-group mt-4">
           <div class="form-check-inline">
@@ -33,14 +33,14 @@
         </div>
         <div class="form-group">
           <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Search books by category" aria-label="Search books by category" aria-describedby="button-addon2" name="search" required>
+            <input type="text" class="form-control" placeholder="Search books by category" aria-label="Search books by category" aria-describedby="button-addon2" name="q" required>
             <div class="input-group-append">
               <button class="btn btn-light" type="submit" id="button-addon2"><i class="fa fa-search"></i></button>
             </div>
           </div>
         </div>          
         {% if get_flashed_messages() %}
-          <div class="alert alert-dark alert-dismissible fade show text-center" role="alert">
+          <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
                {{ get_flashed_messages()[0] }}
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -52,12 +52,18 @@
         <p>Click on a book title to be taken to its page.</p>
           {% for book in books %}
             <div class="list-group">
-                <a href="{{ url_for('book', book_id=book.id) }}" class="list-group-item list-group-item-action mb-1">
-                  <img class="float-left mr-4" src="http://covers.openlibrary.org/b/isbn/{{ book.isbn }}-S.jpg"/>
-                  <h3 class="text-primary">{{ book["title"] }} ({{ book["year"] }})</h2>
-                  <p class="text-info"><strong>{{ book["author"] }}</strong>
-                  <span class="text-secondary"><strong><span class="text-warning"><strong>|<strong></span> ISBN</strong>: {{ book["isbn"] }}</span></p>
-                </a>
+              <a href="{{ url_for('book', book_id=book.id) }}" class="list-group-item list-group-item-action mb-1">
+              <div class="row">                
+                <div class="col-sm-1">
+                  <img class="mr-4" src="http://covers.openlibrary.org/b/isbn/{{ book.isbn }}-S.jpg"/>
+                </div>
+                <div class="col-sm-11">
+                  <h3 class="text-primary">{{ book.title }} ({{ book.year }})</h2>
+                  <p class="text-info"><strong>{{ book.author }}</strong>
+                  <span class="text-secondary"><strong><span class="text-warning"><strong>|<strong></span> ISBN</strong>: {{ book.isbn }}</span></p>                
+                </div>
+              </div>
+              </a>
             </div>
           {% endfor %}
         {% endif %}

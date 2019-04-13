@@ -20,7 +20,7 @@
           <a href="#"><img src="{{ thumbnail }}" class="card-img-top bg-white" alt="..."></a>
           <div class="card-body">
             <h5 class="card-title">{{book.title}} ({{book.year}})</h5>
-            <p class="text-info"><strong>{{ book["author"] }}</strong><span class="text-secondary"><br> <strong>ISBN</strong>: {{ book["isbn"] }}</span></p>
+            <p class="text-info"><strong>{{ book.author }}</strong><span class="text-secondary"><br> <strong>ISBN</strong>: {{ book.isbn }}</span></p>
             <hr>
             <h6><strong>Book Description:</strong></h6>
             <p class="text-justify">{{ plot }}</p>
@@ -41,7 +41,7 @@
               <br>
               (based on <strong>{{ count }}</strong> reviews)
             </p>
-            <p>Have you read this book? How was it? Fill up the form to leave a review and rating. Sprinkle those stars and letters and share your thoughts with others.</p>
+            <p>Have you read this book? Sprinkle those stars and letters and share your thoughts with others.</p>
             <p class="small"><strong>Note</strong>: You can only write a review once so make it count! 😃</p>
           </div>
           <div class="col-sm-8">
@@ -107,7 +107,7 @@
           </div>
           {% endfor %}
           {% else %}
-            <p>"<em>{{ book.title}}</em>" has zero reviews so far. Be the first to write one for this book.</p>
+            <p>"<em>{{ book.title}}</em>" has zero reviews so far. Be the first to review this book.</p>
         {% endif %}
       </div>
     </div>

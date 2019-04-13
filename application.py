@@ -90,16 +90,16 @@ def login():
 	else:	
 		return render_template("login.html")
 
-@app.route("/search", methods=["GET", "POST"])
+@app.route("/search", methods=["GET"])
 @login_required
 def search():
 	"""Search library for books."""
 
 	# if user submits form
-	if request.method == "POST":
+	if request.args.get("category") and request.args.get("q"):
 
-		category = request.form.get("category")
-		search = request.form.get("search")
+		category = request.args.get("category")
+		search = request.args.get("q")
 		rough_search = f'%{search}%'
 
 		#query database
@@ -183,7 +183,7 @@ def logout():
     return redirect(url_for("index"))
 
 
-@app.route("/api/<isbn>", methods=["GET"])
+@app.route("/api/<isbn>")
 @login_required
 def api(isbn):
 	"""Provide access to API."""

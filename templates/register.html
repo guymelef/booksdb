@@ -15,10 +15,10 @@
 {% block main %}
   <div class="container h-100">
     <div class="row h-100 justify-content-center align-items-center">
-      <form method="post" class="ml-2 mr-2 mt-0">
+      <form method="POST" class="ml-2 mr-2 mt-0">
         <h1 class="text-center mb-4">Join BooksDB!</h1>
         {% if get_flashed_messages() %}
-          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <div class="alert alert-dark alert-dismissible fade show" role="alert">
             <div class="text-center"> {{ get_flashed_messages()[0] }} </div>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
