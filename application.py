@@ -161,7 +161,7 @@ def book(book_id):
 
 
 		# get plot & thumbnail from Google Books API
-		googleAPI = requests.get("https://www.googleapis.com/books/v1/volumes?q="f'{book.title}'"").json()["items"][0]["volumeInfo"]
+		googleAPI = requests.get("https://www.googleapis.com/books/v1/volumes?q="f'{book.isbn}'"").json()["items"][0]["volumeInfo"]
 		plot = googleAPI["description"]
 		thumbnail = googleAPI["imageLinks"]["thumbnail"]
 
@@ -188,7 +188,6 @@ def logout():
 def api(isbn):
 	"""Provide access to API."""
 
-
 	# query database for book using isbn
 	book = db.execute("SELECT * FROM library WHERE isbn = :isbn", {"isbn" : isbn}).fetchone()
 
@@ -196,17 +195,14 @@ def api(isbn):
 	if book is None:
 		return jsonify({"error": "Invalid ISBN"}), 404
 
-	# query Goodreads
-	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "***REMOVED***", "isbns": book.isbn})	
-	goodreads = res.json()['books'][0]
-	avg_rating = goodreads['average_rating']
-	rev_count = goodreads['work_ratings_count']
-
+	# query db for review count and rating
+	booksdb = db.execute("SELECT COUNT(*), ROUND(AVG(rating),2) FROM reviews WHERE book_id = :book_id", {"book_id" : book.id}).fetchone()
+	
 	return jsonify({
 		    "title": book.title,
 		    "author": book.author,
 		    "year": book.year,
 		    "isbn": book.isbn,
-		    "review_count": rev_count,
-		    "average_score": avg_rating
+		    "review_count": f'{booksdb[0]}',
+		    "average_score": "0" if booksdb[1] is None else f'{booksdb[1]}'
 		})
