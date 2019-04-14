@@ -13,7 +13,8 @@ A flask app for searching and reviewing books. Live at: https://books4cs50w.hero
 - **search**
 - **book/<id>**
 
-### API can be accessed at: /api/book<isbn>. You must be logged in to get a response.
+### API
+API can be accessed at: /api/book<isbn>. You must be logged in to get a response.
 
 
 ### Reviews can be made at the **book** page.
