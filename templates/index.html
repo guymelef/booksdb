@@ -9,7 +9,11 @@
 {% endblock %}
 
 {% block home_redirect %}
-  {{ url_for("index") }}
+  {% if session["user"] %}
+    {{ url_for("search") }}
+  {% else %}
+    {{ url_for("index") }}
+  {% endif%}
 {% endblock %}
 
 {% block main %}

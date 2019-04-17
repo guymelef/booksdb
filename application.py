@@ -211,11 +211,8 @@ def book(book_id):
 		# get plot & thumbnail from Google Books API
 		googleAPI = requests.get("https://www.googleapis.com/books/v1/volumes?q="f'{book.isbn}'"").json()["items"][0]["volumeInfo"]
 		plot = googleAPI["description"]
-		thumbnail = ""
-		if googleAPI.get("imageLinks") is None:
-			thumbnail = "http://covers.openlibrary.org/b/isbn/"f'{book.isbn}'"-M.jpg"
-		else:
-			thumbnail = googleAPI["imageLinks"]["thumbnail"]
+		
+		thumbnail = "http://covers.openlibrary.org/b/isbn/"f'{book.isbn}'"-L.jpg"
 
 		# get user reviews from db
 		reviews = db.execute("SELECT username, date_posted, rating, review_text FROM reviews JOIN users ON users.id = reviews.user_id WHERE book_id = :book_id ORDER BY date_posted DESC", {"book_id" : book_id}).fetchall()
