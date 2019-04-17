@@ -166,7 +166,6 @@ def search():
 def book(book_id):
 	"""Show individual book pages."""
 
-
 	# find book in library db
 	book = db.execute("SELECT * FROM library WHERE id = :id", {"id" : book_id}).fetchone()
 
@@ -209,7 +208,11 @@ def book(book_id):
 		rev_count = goodreads['work_ratings_count']
 
 		# get plot & thumbnail from Google Books API
-		googleAPI = requests.get("https://www.googleapis.com/books/v1/volumes?q="f'{book.isbn}'"").json()["items"][0]["volumeInfo"]
+		req = "https://www.googleapis.com/books/v1/volumes?q=title+inauthor:byauthor"
+		req = req.replace("title", book.title)
+		req = req.replace("byauthor", book.author)
+
+		googleAPI = requests.get(req).json()["items"][0]["volumeInfo"]
 		plot = googleAPI["description"]
 		
 		thumbnail = "http://covers.openlibrary.org/b/isbn/"f'{book.isbn}'"-L.jpg"
