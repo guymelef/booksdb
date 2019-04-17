@@ -54,10 +54,10 @@
             <div class="list-group">
               <a href="{{ url_for('book', book_id=book.id) }}" class="list-group-item list-group-item-action mb-1">
               <div class="row">                
-                <div class="col-sm-1">
-                  <img class="mr-4" src="http://covers.openlibrary.org/b/isbn/{{ book.isbn }}-S.jpg"/>
+                <div class="col-2 text-center">
+                  <img style="background-image: url('http://covers.openlibrary.org/b/isbn/{{ book.isbn }}-S.jpg'), url('../static/img/book.jpg');" height="58" width="37">
                 </div>
-                <div class="col-sm-11">
+                <div class="col-10">
                   <h3 class="text-primary">{{ book.title }} ({{ book.year }})</h2>
                   <p class="text-info"><strong>{{ book.author }}</strong>
                   <span class="text-secondary"><strong><span class="text-warning"><strong>|<strong></span> ISBN</strong>: {{ book.isbn }}</span></p>                
