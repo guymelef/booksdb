@@ -215,7 +215,11 @@ def book(book_id):
 		googleAPI = requests.get(req).json()["items"][0]["volumeInfo"]
 		plot = googleAPI["description"]
 		
-		thumbnail = "http://covers.openlibrary.org/b/isbn/"f'{book.isbn}'"-L.jpg"
+		thumbnail = ""
+		try:
+			thumbnail = googleAPI["imageLinks"]["thumbnail"].replace("zoom=1", "zoom=3")
+		except:
+			thumbnail = "http://covers.openlibrary.org/b/isbn/"f'{book.isbn}'"-L.jpg"
 
 		# get user reviews from db
 		reviews = db.execute("SELECT username, date_posted, rating, review_text FROM reviews JOIN users ON users.id = reviews.user_id WHERE book_id = :book_id ORDER BY date_posted DESC", {"book_id" : book_id}).fetchall()
