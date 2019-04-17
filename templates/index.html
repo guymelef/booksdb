@@ -13,15 +13,17 @@
 {% endblock %}
 
 {% block main %}
-  <div class="container h-100 d-flex flex-column">
+  <div class="container h-100 d-flex flex-column"> 
     <div class="jumbotron bg-transparent my-auto">
-      <h1 class="mb-4">Hello, bibliophiles! 😎</h1>
-      <p class="lead">Search information about your favorite reads. Browse books by author, title, or ISBN. <br> Write review for books that interest you and see how other people rated them.</p>
-      <hr class="my-4">
-      <p>It's quite easy to get started, just click the button below to register for free.</p>
-      <a href="{{ url_for('register') }}">
-        <button type="button" class="btn btn-lg" id="signup-btn"><i class="fas fa-user-plus"></i> Sign Up</button>
-      </a>
+      <div class="container">
+        <h1 class="mb-4">Hello, bibliophiles! 😎</h1>
+        <p class="lead">Search information about your favorite reads. Browse books by author, title, or ISBN. <br> Write review for books that interest you and see how other people rated them.</p>
+        <hr class="my-4">
+        <p>It's quite easy to get started, just click the button below to register for free.</p>
+        <a href="{{ url_for('register') }}">
+          <button type="button" class="btn btn-lg" id="signup-btn"><i class="fas fa-user-plus"></i> Sign Up</button>
+        </a>
+      </div>
     </div>
   </div>
 {% endblock %}

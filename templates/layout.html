@@ -26,21 +26,99 @@
   <body>
     <nav class="navbar navbar-expand-lg bg-transparent">
       <a class="navbar-brand" href="{% block home_redirect %}{% endblock %}">📚<strong> BOOKSDB</strong></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+    
       </button>
       <ul class="navbar-nav ml-auto">
         {% if session.user %}
+        <div class="row">
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('search') }}">
-              <button class="btn btn-info rounded-0" type="button">Hey, <strong>{{ session.user}}!</strong></button>
-            </a>
+            <div class="dropdown mt-2">
+              <a class="btn btn-info rounded-0 dropdown-toggle dropdown-toggle-split" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Hey, <strong>{{ session["user"] }}</strong>!
+              </a>
+              <div class="dropdown-menu position-absolute bg-light" aria-labelledby="dropdownMenuLink">
+                <h6 class="dropdown-header"><u><strong>Books you visited this session</strong></u>:</h6>
+                {% if session["history"] %}
+                  {% for book in (session["history"])[-10::] %}
+                    {% for title, id in book.items() %}
+                      <a class="dropdown-item text-primary" href="{{url_for('book', book_id=id)}}">{{ title }}</a>
+                    {% endfor %}
+                  {% endfor %}
+                {% else %}
+                    <a class="dropdown-item" href="{{url_for('search')}}"><em>None so far. Start browsing!</em></a>
+                {% endif %}
+                <div class="dropdown-divider"></div>
+                <div class="container">
+                  <a class="dropdown-item text-info text-center btn btn-primary" data-toggle="modal" data-target="#profile" href="#profile" type="submit" role="button"><strong><i class="fas fa-user-circle"></i> My Profile</strong></a>
+                </div>
+              </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="profile" tabindex="-1" role="dialog" aria-labelledby="profileLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="container modal-header">
+                    <h5 class="modal-title" id="profileLabel"><i class="fas fa-id-card text-info mr-2"></i>USER INFORMATION</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container">
+                      <h6><strong><i class="fas fa-edit text-info mr-2"> </i><u>Reviewed Books</strong>:</u></h6>
+                      {% if session["reviews"] %}
+                      <ul>
+                        {% for id, title, year in session["reviews"] %}
+                          <li><a href="{{url_for('book', book_id=id)}}">{{ title }} ({{ year }})</a></li>
+                        {% endfor%}
+                      </ul>
+                      {% else %}
+                        <p><em>You have not reviewed a book yet.</em></p>                    
+                      {% endif %}
+                    </div>
+                    <hr>
+                    <div class="container">
+                      <h6><strong><i class="fas fa-user-shield text-info mr-2"></i><u>Security</strong>:</u></h6>
+                      <p>Fill up the the form below to change your password.</p>
+                      <form action="/profile" method="POST" class="ml-2 mr-2 mt-0">
+                        <div class="form-group row">
+                          <label for="username">Old password:</label>
+                          <input type="password" class="form-control" name="oldPass" placeholder="old password" required>
+                        </div>
+                        <div class="form-group row">
+                          <label for="password">New password:</label>
+                          <input type="password" class="form-control" name="newPass" placeholder="new password (8 characters mininum)" minlength="8" required>
+                        </div>
+                        <div class="form-group row">
+                          <label for="retype password">Retype new password:</label>
+                          <input type="password" class="form-control" name="checkPass" placeholder="retype new password" required>
+                        </div>
+                        <div class="form-group row">
+                          <button type="submit" class="btn btn-info">Submit</button>
+                        </div>
+                      </form>
+                    </div>
+                    <hr>
+                    <div class="container">
+                      <h6><strong><i class="fas fa-code text-info mr-2"></i><u>API</strong>:</u></h6>
+                      <p>You can make a GET request via this route: <code>api/&lt;isbn&gt;</code>
+                        <br> A JSON response is returned.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('logout') }}">
-              <button type="button" class="btn" role="button" id="logout-btn">Log Out <i class="fas fa-sign-out-alt"></i></button>
+              <button type="button" class="btn ml-1" role="button" id="logout-btn">Log Out <i class="fas fa-sign-out-alt"></i></button>
             </a>
           </li>
+        </div>
         {% else %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('login') }}">
@@ -48,7 +126,6 @@
             </a>
           </li>
         {% endif %}
-
       </ul>
     </nav>
     

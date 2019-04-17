@@ -31,6 +31,7 @@ def index():
 
 	return render_template("index.html")
 
+
 @app.route("/register",  methods=["GET", "POST"])
 def register():
 	"""Register user."""
@@ -62,6 +63,7 @@ def register():
 	else:
 		return render_template("register.html")
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
 	"""Sign in user."""
@@ -83,6 +85,16 @@ def login():
 		session["user_id"] = user["id"]
 		session["user"] = user["username"]
 
+		# query db for book reviewed by user
+		# add it to session["reviewed"] for easy access
+		reviewed = db.execute("SELECT library.id, library.title, library.year FROM reviews JOIN library ON library.id = reviews.book_id WHERE user_id = :id ORDER BY date_posted DESC", {"id" : session["user_id"]}).fetchall()
+
+		if len(reviewed) == 0:
+			pass
+		else:
+			for book in reviewed:
+				session.setdefault("reviews",[]).append((book.id, book.title, book.year))
+
 		# redirect to search page
 		return redirect(url_for("search"))
 
@@ -90,7 +102,38 @@ def login():
 	else:	
 		return render_template("login.html")
 
-@app.route("/search", methods=["GET"])
+
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+	"""Visit user profile page."""
+
+	# when user submits form to change password
+	if request.method == "POST":
+
+		# query database
+		user = db.execute("SELECT * FROM users WHERE username = :username", {"username" : session["user"]}).fetchone()
+
+		# verify user-password from db
+		if not pwd_context.verify(request.form.get("oldPass"), user["hash"]) or request.form.get("newPass") != request.form.get("checkPass"):
+			flash("❌ Mismatch found. Please fill up the form correctly.")
+			return redirect(url_for("search"))
+
+		# hash user password
+		hash = pwd_context.hash(request.form.get("newPass"))
+
+		# change old password
+		db.execute("UPDATE users SET hash = :hash WHERE username = :username", {"hash" : hash, "username" : session["user"]})
+		db.commit()
+
+		flash("✅ Password successfully updated!")
+		return redirect(url_for("search"))
+
+	else:
+		return redirect(url_for("search"))
+
+
+@app.route("/search", methods=["GET", "POST"])
 @login_required
 def search():
 	"""Search library for books."""
@@ -113,23 +156,26 @@ def search():
 		# return books to search page
 		return render_template("search.html", books = books, number = len(books))
 
-	# if user reaches page via GET	
+	# if user reaches page via GET
 	else:
 		return render_template("search.html")
+
 
 @app.route("/book/<int:book_id>", methods=["GET", "POST"])
 @login_required
 def book(book_id):
 	"""Show individual book pages."""
-	
+
+
+	# find book in library db
+	book = db.execute("SELECT * FROM library WHERE id = :id", {"id" : book_id}).fetchone()
+
 	# if user submits a review via the form
 	if request.method == "POST":
 
 		# get review details
 		rating = request.form.get("star")
 		comment = request.form.get("comment")
-		user_id = session["user_id"]
-		book_id = book_id
 
 		# verify if user has made a review for this book already
 		check = db.execute("SELECT * from reviews WHERE user_id = :user_id AND book_id = :book_id", {"user_id" : session["user_id"], "book_id" : book_id}).fetchone()
@@ -138,27 +184,29 @@ def book(book_id):
 			return redirect(url_for("book",book_id=book_id))
 
 		# add review to database
-		db.execute("INSERT INTO reviews (rating, review_text, user_id, book_id) VALUES (:rating, :review_text, :user_id, :book_id)", {"rating" : rating, "review_text" : comment, "user_id" : user_id, "book_id" : book_id})
+		db.execute("INSERT INTO reviews (rating, review_text, user_id, book_id) VALUES (:rating, :review_text, :user_id, :book_id)", {"rating" : rating, "review_text" : comment, "user_id" : session["user_id"], "book_id" : book_id})
 		db.commit()
 
+		# add book to session["reviewed"]
+		book = (book_id, book.title, book.year)
+		session.setdefault("reviews",[]).append(book)
+
 		flash("Awesome! Your review has been added. ❤️")
-		return redirect(url_for("book",book_id=book_id))
+		return redirect(url_for("book", book_id=book_id))
 
 	# user reaches route via GET
 	else:
 
-		# find book in library db
-		book = db.execute("SELECT * FROM library WHERE id = :id", {"id" : book_id}).fetchone()
 		if book is None or len(book) == 0:
 			return redirect(url_for("search"))
 
+		# get Goodreads data
 		res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "***REMOVED***", "isbns": book.isbn})
 		
 		# Goodreads API data
 		goodreads = res.json()['books'][0]
 		avg_rating = goodreads['average_rating']
 		rev_count = goodreads['work_ratings_count']
-
 
 		# get plot & thumbnail from Google Books API
 		googleAPI = requests.get("https://www.googleapis.com/books/v1/volumes?q="f'{book.isbn}'"").json()["items"][0]["volumeInfo"]
@@ -169,10 +217,17 @@ def book(book_id):
 		else:
 			thumbnail = googleAPI["imageLinks"]["thumbnail"]
 
-	
 		# get user reviews from db
 		reviews = db.execute("SELECT username, date_posted, rating, review_text FROM reviews JOIN users ON users.id = reviews.user_id WHERE book_id = :book_id ORDER BY date_posted DESC", {"book_id" : book_id}).fetchall()
 
+		# track user browsing history
+		if session.get("history") is None:
+			session.setdefault("history",[]).append({book.title : book.id})
+		elif {book.title : book.id} in session["history"]:
+			print("Book is already in browsing history.")
+		else:
+			session.setdefault("history",[]).append({book.title : book.id})
+		
 		return render_template("book.html", book=book, rating=avg_rating, count=rev_count, plot=plot, thumbnail=thumbnail, reviews=reviews)
 
 
@@ -188,7 +243,6 @@ def logout():
 
 
 @app.route("/api/<isbn>")
-@login_required
 def api(isbn):
 	"""Provide access to API."""
 
