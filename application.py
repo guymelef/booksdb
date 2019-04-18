@@ -221,6 +221,13 @@ def book(book_id):
 		except:
 			thumbnail = "http://covers.openlibrary.org/b/isbn/"f'{book.isbn}'"-L.jpg"
 
+
+		# query back BooksDB API to get review scores
+		booksDB = requests.get("https://books4cs50w.herokuapp.com/api/"f'{book.isbn}'"").json()
+		ave_score = booksDB["average_score"]
+		ave_count = int(booksDB["review_count"])
+
+
 		# get user reviews from db
 		reviews = db.execute("SELECT username, date_posted, rating, review_text FROM reviews JOIN users ON users.id = reviews.user_id WHERE book_id = :book_id ORDER BY date_posted DESC", {"book_id" : book_id}).fetchall()
 
@@ -232,7 +239,7 @@ def book(book_id):
 		else:
 			session.setdefault("history",[]).append({book.title : book.id})
 		
-		return render_template("book.html", book=book, rating=avg_rating, count=rev_count, plot=plot, thumbnail=thumbnail, reviews=reviews)
+		return render_template("book.html", book=book, rating=avg_rating, count=rev_count, plot=plot, thumbnail=thumbnail, reviews=reviews, ave_score = ave_score, ave_count = ave_count)
 
 
 @app.route("/logout")
