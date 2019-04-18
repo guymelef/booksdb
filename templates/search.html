@@ -48,8 +48,8 @@
           </div>
         {% endif %}
         {% if books|length %}
-        <h3 class="mb-0">Search found {{ number }} result(s):</h3>
-        <p>Click on a book title to be taken to its page.</p>
+        <h3 class="mb-0">Search found {% if number > 1 %}{{number}}{% else %}a{% endif %} {% if number > 1 %}results{% else %}book{% endif %}:</h3>
+        <p>Click on {% if number > 1 %}a{% else %}the{% endif %} book title to be taken to its page.</p>
           {% for book in books %}
             <div class="list-group">
               <a href="{{ url_for('book', book_id=book.id) }}" class="list-group-item list-group-item-action mb-1">
