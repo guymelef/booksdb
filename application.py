@@ -246,7 +246,7 @@ def logout():
     return redirect(url_for("index"))
 
 
-@app.route("/api/<isbn>")
+@app.route("/api/<isbn>", methods=["GET"])
 def api(isbn):
 	"""Provide access to API."""
 
