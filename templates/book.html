@@ -87,6 +87,7 @@
         <hr>
         {% if reviews %}
           <h3 class="font-weight-bold">User Reviews:</h3>
+          <p><u class="font-weight-bold">BooksDB Ave. Rating</u>: <span class="text-primary font-weight-bold">{{ ave_score }}</span> (<span class="font-weight-bold text-secondary">{{ ave_count }} {% if ave_count > 1 %}reviews{% else %}review{% endif %}</span>)</strong></p>
           {% for review in reviews %}
           <div class="container rounded bg-light mt-1">
             <div class="row ml-0 mr-0">
