@@ -235,7 +235,7 @@ def book(book_id):
 		if session.get("history") is None:
 			session.setdefault("history",[]).append({book.title : book.id})
 		elif {book.title : book.id} in session["history"]:
-			print("Book is already in browsing history.")
+			pass
 		else:
 			session.setdefault("history",[]).append({book.title : book.id})
 		
