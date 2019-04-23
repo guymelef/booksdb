@@ -9,9 +9,6 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 from functions import *
 
-from pyreadline import Readline
-readline = Readline()
-
 app = Flask(__name__)
 
 # Check for environment variable
