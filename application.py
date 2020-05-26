@@ -1,3 +1,5 @@
+# pylint: disable=E1101
+
 import os
 import requests
 
@@ -7,7 +9,7 @@ from passlib.apps import custom_app_context as pwd_context
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from functions import *
+from functions import login_required
 
 app = Flask(__name__)
 
@@ -49,7 +51,7 @@ def register():
 
 		# add user to db & check if unique
 		try:
-			result = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": request.form.get("username").lower(), "hash": hash})
+			db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": request.form.get("username").lower(), "hash": hash})
 		except:
 			flash("Username is taken. 😕")
 			return redirect(url_for("register"))
@@ -200,7 +202,7 @@ def book(book_id):
 			return redirect(url_for("search"))
 
 		# get Goodreads data
-		res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "***REMOVED***", "isbns": book.isbn})
+		res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": os.getenv("GOODREADS_KEY"), "isbns": book.isbn})
 		
 		# Goodreads API data
 		goodreads = res.json()['books'][0]
